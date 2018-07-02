@@ -1,8 +1,12 @@
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
+var morgan = require('morgan')
 
 app.use(bodyParser.json())
+app.use(morgan('tiny'))
+morgan.token('json', function(req, res){ return JSON.stringify(req.body); })
+app.use(morgan(':method :url :json :status :res[content-length] - :response-time ms'))
 
 let persons = [
   {
@@ -79,6 +83,7 @@ app.get('/info', (req, res) => {
 
   res.send(`<p> Puhelinluettelossa on ${total} henkilön tiedot </p> <p> ${date} </p>`)
 })
+app.use(morgan.token('type', function (req, res) { return req.headers['content-type'] }))
 
 const PORT = 3001
 app.listen(PORT, () => {
